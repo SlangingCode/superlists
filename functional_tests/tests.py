@@ -1,12 +1,14 @@
 import sys
-import unittest
+from time import sleep
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.keys import Keys
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
+    binary = FirefoxBinary(r'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe')
 
     @classmethod
     def setUpClass(cls):
@@ -23,7 +25,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
             super().tearDownClass()
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Firefox(firefox_binary=self.binary)
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -58,6 +60,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy peacock feathers" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
+        sleep(2) # TODO: figure out how to do this via selenium
         edith_list_url = self.browser.current_url
         self.assertRegex(edith_list_url, '/lists/.+')
         self.check_for_row_in_list_table('1: Buy peacock feathers')
@@ -68,6 +71,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
+        sleep(4) # TODO: figure out how to do this via selenium
+
 
         # The page updates again, and now shows both items on her list
         self.check_for_row_in_list_table('2: Use peacock feathers to make a fly') 
@@ -84,7 +89,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         ## We use a new browser session to make sure that no information
         ## of Edith's is coming through from cookies etc
         self.browser.quit()
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Firefox(firefox_binary=self.binary)
 
         # Francis visits the home page.  There is no sign of Edith's
         # list
@@ -98,6 +103,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Buy milk')
         inputbox.send_keys(Keys.ENTER)
+        sleep(2)  # TODO: figure out how to do this via selenium
 
         # Francis get his own unique URL
         francis_list_url = self.browser.current_url
@@ -121,7 +127,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
-            delta=5
+            delta=10
         )
 
         # She starts a new list and see the input is nicely
@@ -131,5 +137,5 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
-            delta=5
+            delta=10
         )

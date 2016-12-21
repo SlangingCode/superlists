@@ -1,3 +1,12 @@
-db.sqlite3
+.idea
+
+superlists-venv
+
+*.swp
+
 __pycache__
 *.pyc
+
+db.sqlite3
+
+geckodriver.log
